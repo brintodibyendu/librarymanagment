@@ -86,6 +86,23 @@ if(isset($_POST['updatepaper']))
 		oci_execute($result2,OCI_DEFAULT);
 	}
 }
+function ok(){
+	$fine="";
+if(isset($_POST['fine']))
+{
+	$conn=oci_connect('BRINTO','tiger','localhost/orcl');
+	$id=$_POST['r'];
+	if(!empty($id))
+	{
+	$stid = oci_parse($conn, 'begin :r := DATE_BET(:p); end;');
+	oci_bind_by_name($stid, ':p', $id);
+	oci_bind_by_name($stid, ':r', $fine);
+	oci_execute($stid);
+	//return $fine;
+	}
+}
+return $fine;
+}
 ?>
 <html>
 <head></head>
@@ -138,7 +155,9 @@ while($row=oci_fetch_array($result1)){
 }
 ?>
 </table></br></br>
-<input type="text" id="r" name="r"/>
+<input type="text" id="r" name="r"/></br>
+<input type="text" name="idtest" value="<?php echo ok() ?>" />
+<button type="submit" id="fine" name="fine">SHOW FINE</button>
 <button type="submit" name="return" id="return">RETURN</button></br></br>
 <?php
 $id=$_SESSION['id'];
@@ -157,7 +176,7 @@ echo "</table></br>";
 echo"<input type='text' name='paperid' id='paperid' style='display:none'/>
 <input type='text' name='papername' id='papername' placeholder='enter paper name'/>
 <input type='text' name='paperdes' id='paperdes' placeholder='enter paper description'/></br>
-<input type='date' name='paperdate' id='paperdate' placeholder='enter paper date'/></br>";
+<input type='date' name='paperdate' id='paperdate'/></br>";
 echo "
 <button type='submit' name='addpaper' id='addpaper'>ADD</button>
 <button type='submit' name='updatepaper' id='updatepaper'>UPDATE</button>

@@ -169,6 +169,83 @@ if(isset($_POST['confirm']))
 		array_push($errors,"Please select date");
 	}
 }
+if(isset($_POST['addevent']))
+{
+	$evname=$_POST['evname'];
+	$evdate=$_POST['evdate'];
+	$evdes=$_POST['evdes'];
+	$libid=$_SESSION['libid'];
+	if(empty($evname))
+	{
+		array_push($errors,"event name is empty");
+	}
+	if(empty($evdate))
+	{
+		array_push($errors,"event date is empty");
+	}
+	if(empty($evdes))
+	{
+		array_push($errors,"event description is empty");
+	}
+	if(count($errors)==0)
+	{
+	    $query2="INSERT INTO EVENTS(EVENT_NAME,EVENT_DATE,EVENT_DES,LIBID) VALUES('$evname',TO_DATE('$evdate','YYYY-MM-DD'),'$evdes','$libid')";
+		$result2=oci_parse($conn,$query2);
+		oci_execute($result2,OCI_DEFAULT);
+	}
+}
+if(isset($_POST['updateevent']))
+{
+	$evid=$_POST['evid'];
+	$evname=$_POST['evname'];
+	$evdate=$_POST['evdate'];
+	$evdes=$_POST['evdes'];
+	$libid=$_SESSION['libid'];
+	if(empty($evname))
+	{
+		array_push($errors,"event name is empty");
+	}
+	if(empty($evdate))
+	{
+		array_push($errors,"event date is empty");
+	}
+	if(empty($evdes))
+	{
+		array_push($errors,"event description is empty");
+	}
+	if(count($errors)==0)
+	{
+	    $query2="UPDATE EVENTS SET EVENT_NAME='$evname',EVENT_DATE=TO_DATE('$evdate','YYYY-MM-DD'),EVENT_DES='$evdes' WHERE EVENT_ID='$evid'";
+		$result2=oci_parse($conn,$query2);
+		oci_execute($result2,OCI_DEFAULT);
+	}
+}
+if(isset($_POST['deleteevent']))
+{
+	$evid=$_POST['evid'];
+	$evname=$_POST['evname'];
+	$evdate=$_POST['evdate'];
+	$evdes=$_POST['evdes'];
+	$libid=$_SESSION['libid'];
+	if(empty($evname))
+	{
+		array_push($errors,"event name is empty");
+	}
+	if(empty($evdate))
+	{
+		array_push($errors,"event date is empty");
+	}
+	if(empty($evdes))
+	{
+		array_push($errors,"event description is empty");
+	}
+	if(count($errors)==0)
+	{
+	    $query2="DELETE FROM EVENTS WHERE EVENT_ID='$evid'";
+		$result2=oci_parse($conn,$query2);
+		oci_execute($result2,OCI_DEFAULT);
+	}
+}
 ?>
 <html>
 <head>
@@ -248,7 +325,33 @@ while($row=oci_fetch_array($result))
 <option value="NO">NO</option>
 </select></br></br>
 <input type="text" id="id" name="id2"/>
-<button type="submit" name="confirm" id="confirm">CONFIRM</button>
+<button type="submit" name="confirm" id="confirm">CONFIRM</button></br></br>
+<table id="event">
+<tr><th style="display:none">EVENT ID</th><th>EVENT NAME</th><th>EVENT DATE</th><th>EVENT DESCRIPTION</th></tr>
+<?php
+$libid=$_SESSION['libid'];
+$conn=oci_connect('BRINTO','tiger','localhost/orcl');
+$query="SELECT * FROM EVENTS WHERE LIBID='$libid'";
+$result=oci_parse($conn,$query);
+oci_execute($result);
+while($row=oci_fetch_array($result))
+{
+	$newDate = date("Y-m-d", strtotime($row['EVENT_DATE']));
+	echo "<tr><td style='display:none'>{$row['EVENT_ID']}</td>
+	<td>{$row['EVENT_NAME']}</td>
+	<td>{$newDate}</td>
+	<td>{$row['EVENT_DES']}</td>
+	</tr>\n";
+}
+?>
+</table>
+<input type="text" name="evid" id="evid" style="display:none"/>
+<input type="text" name="evname" id="evname"/></br>
+<input type="date" name="evdate" id="evdate"/>
+<input type="text" name="evdes" id="evdes"/></br>
+<button type="submit" name="addevent" id="addevent">ADD</button>
+<button type="submit" name="updateevent" id="updateevent">UPDATE</button>
+<button type="submit" name="deleteevent" id="deleteevent">DELETE</button></br>
 </form>
 <p><a href="userpage.php?logout='1'">Logout</a></p>
 <script>
@@ -274,6 +377,19 @@ for(var i=1;i<tab1.rows.length;i++)
 		rindex1=this.rowIndex;
 		console.log(rindex1);
 		document.getElementById("b").value=this.cells[0].innerHTML;
+	}
+}
+var tab2=document.getElementById("event"),rindex2;
+for(var i=1;i<tab2.rows.length;i++)
+{
+	tab2.rows[i].onclick=function()
+	{
+		rindex2=this.rowIndex;
+		console.log(rindex2);
+		document.getElementById("evid").value=this.cells[0].innerHTML;
+		document.getElementById("evname").value=this.cells[1].innerHTML;
+		document.getElementById("evdate").value=this.cells[2].innerHTML;
+		document.getElementById("evdes").value=this.cells[3].innerHTML;
 	}
 }
 var e = document.getElementById("c");
