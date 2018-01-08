@@ -2,18 +2,23 @@
 session_start();
 include('regfunc.php');
 ?>
-<html>
+<html lang="en">
 <head>
-<script src="js/jquery.js"></script>
-<script src="js/bootstrap.js"></script>
-<link rel="stylesheet" href="bootstrap/bootstrap.css">
+<meta charset="utf-8">
+<meta http-equiv="X-UAUCompatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<form method="post" action="book.php">
+<script src="js/bootstrap.min.js"></script>
 <?php
 include('errors.php');
 ?>
-<table id="book" border="2" class="table">
+<form method="POST">
+<div >
+<table  id="book" border="2" class="table">
 <tr>
 <th style="display:none">BOOK ID</th>
 <th>BOOK_NAME</th>
@@ -39,16 +44,16 @@ while($row=oci_fetch_array($result)){
 	</tr>\n";
 } 
 ?>
-</table></br>
-<input type="text" name="s"/>
+</table></div></br>
+<div>
+</div>
 <input type="text" id="id" name="id2" style="display:none" />
 <input type="text" id="id3" name="id3" style="display:none"/>
 <?php
 if(isset($_SESSION['id']))
 {
-	echo"<input type='text' id='bor' name='bor' placeholder='please enter borrow id'/>";
-	echo"<button type='submit' id='borrow' name='borrow'>BORROW THIS</button>";
-	echo "<button type='submit' id='wish' name='wish'>ADD TO WISHLIST</button></br></br>";
+	echo"<button type='submit' id='borrow' name='borrow'>BORROW THIS</button></br>";
+	echo "<button type='submit' id='wish' name='wish'>ADD TO WISHLIST</button></br>";
 	echo "<button type='submit' id='favourite' name='favourite'>ADD TO FAVOURITE</button></br></br>";
 	echo "
 	<select id='rate'>
@@ -59,6 +64,8 @@ if(isset($_SESSION['id']))
 ?>
 </form>
 <button type="submit" id="back">GO TO HOME</button>
+</body>
+</html>
 <script>
 var tab=document.getElementById("book"),rindex;
 for(var i=1;i<tab.rows.length;i++)
@@ -72,7 +79,7 @@ for(var i=1;i<tab.rows.length;i++)
 		e.onclick=function()
 		{
 		var strUser = e.options[e.selectedIndex].text;
-document.getElementById("id3").value=strUser;	
+		document.getElementById("id3").value=strUser;	
 		}
 	}
 }
@@ -81,5 +88,3 @@ btn.addEventListener('click', function() {
   document.location.href = 'userpage.php';
 });
 </script>
-</body>
-</html>

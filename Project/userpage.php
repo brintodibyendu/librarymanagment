@@ -18,20 +18,12 @@ if(isset($_POST['show']))
 if(isset($_POST['return']))
 {
 	$id=$_POST['r'];
-	$query3="SELECT B.COPY COPY,B.BOOK_ID BOOK_ID FROM BOOKS B WHERE B.BOOK_ID=(SELECT C.BOOK_ID FROM BORROW C WHERE BORROW_ID='$id')";
-	$result3=oci_parse($conn,$query3);
-	oci_execute($result3);
-	while($row=oci_fetch_array($result3))
+	if(!empty($id))
 	{
-		$copy=$row['COPY'];
-		$id2=$row['BOOK_ID'];
+	$stid = oci_parse($conn, 'begin UP_BOOK(:p); end;');
+	oci_bind_by_name($stid, ':p', $id);
+	oci_execute($stid);
 	}
-	$query4="UPDATE BOOKS SET COPY='$copy'+1 WHERE BOOK_ID='$id2'";
-	$result4=oci_parse($conn,$query4);
-	oci_execute($result4);
-	$query5="DELETE FROM BORROW WHERE BORROW_ID='$id'";
-	$result5=oci_parse($conn,$query5);
-	oci_execute($result5);
 }
 if(isset($_POST['addpaper']))
 {
@@ -155,9 +147,9 @@ while($row=oci_fetch_array($result1)){
 }
 ?>
 </table></br></br>
-<input type="text" id="r" name="r"/></br>
+<input type="text" id="r" name="r"  style="display:none"/></br>
 <input type="text" name="idtest" value="<?php echo ok() ?>" />
-<button type="submit" id="fine" name="fine">SHOW FINE</button>
+<button type="submit" id="fine" name="fine">SHOW FINE</button></br>
 <button type="submit" name="return" id="return">RETURN</button></br></br>
 <?php
 $id=$_SESSION['id'];

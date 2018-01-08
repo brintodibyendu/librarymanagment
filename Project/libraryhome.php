@@ -143,20 +143,9 @@ if(isset($_POST['confirm']))
 	$copy="";
     if($confirm=="NO")
 	{
-		$query3="SELECT B.COPY COPY,B.BOOK_ID BOOK_ID FROM BOOKS B WHERE B.BOOK_ID=(SELECT C.BOOK_ID FROM BORROW C WHERE BORROW_ID='$id')";
-		$result3=oci_parse($conn,$query3);
-		oci_execute($result3);
-		while($row=oci_fetch_array($result3))
-		{
-			$copy=$row['COPY'];
-			$id2=$row['BOOK_ID'];
-		}
-		$query4="UPDATE BOOKS SET COPY='$copy'+1 WHERE BOOK_ID='$id2'";
-		$result4=oci_parse($conn,$query4);
-		oci_execute($result4);
-		$query5="DELETE FROM BORROW WHERE BORROW_ID='$id'";
-		$result5=oci_parse($conn,$query5);
-		oci_execute($result5);
+		$stid = oci_parse($conn, 'begin UP_BOOK(:p); end;');
+		oci_bind_by_name($stid, ':p', $id);
+		oci_execute($stid);
 	}
 	else if($confirm=="YES" && !empty($sdate) && !empty($edate))
 	{
@@ -245,6 +234,10 @@ if(isset($_POST['deleteevent']))
 		$result2=oci_parse($conn,$query2);
 		oci_execute($result2,OCI_DEFAULT);
 	}
+}
+if(isset($_POST['report']))
+{
+	header('LOCATION:userreport.php');
 }
 ?>
 <html>
@@ -351,7 +344,8 @@ while($row=oci_fetch_array($result))
 <input type="text" name="evdes" id="evdes"/></br>
 <button type="submit" name="addevent" id="addevent">ADD</button>
 <button type="submit" name="updateevent" id="updateevent">UPDATE</button>
-<button type="submit" name="deleteevent" id="deleteevent">DELETE</button></br>
+<button type="submit" name="deleteevent" id="deleteevent">DELETE</button></br></br>
+<button type="submit" name="report">CREATE REPORT</button>
 </form>
 <p><a href="userpage.php?logout='1'">Logout</a></p>
 <script>

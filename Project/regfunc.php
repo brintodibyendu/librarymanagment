@@ -104,7 +104,7 @@ if(isset($_POST['register'])){
             oci_execute($result);
 			$_SESSION['id']=$id;
 			$_SESSION['success']="You are now logged in";
-		header('LOCATION:userpage.php');
+			header('LOCATION:userpage.php');
 		}
 		else{
 			array_push($errors,"Already Registered");
@@ -181,10 +181,12 @@ if(isset($_POST['login'])){
 		$query="SELECT * FROM USER1 WHERE USER_ID='$id' AND PASSWORD='$password'";
 		$result=oci_parse($conn,$query);
 		oci_execute($result,OCI_DEFAULT);
-		$resourse=array();
-		$numrows=oci_fetch_all($result,$resourse,null,null,OCI_FETCHSTATEMENT_BY_ROW);
-		if($numrows==1){
+		while($row=oci_fetch_array($result)){
+			$type=$row['USER_TYPE'];
+		}
+		if(!empty($type)){
 			$_SESSION['id']=$id;
+			$_SESSION['type']=$type;
 			$_SESSION['success']="You are now logged in";
 			header('LOCATION:userpage.php');
 		}else{
@@ -249,7 +251,7 @@ if(isset($_POST['wish']))
 		{
 			$query="INSERT INTO WISHLIST(USER_ID,BOOK_ID) VALUES('$uid','$bid')";
 			$result=oci_parse($conn,$query);
-oci_execute($result);
+			oci_execute($result);
 		}
 		else{
 			array_push($errors,"ALREADY IN WISHLIST");
@@ -294,29 +296,14 @@ if(isset($_POST['rate']))
 if(isset($_POST['borrow']))
 {
 	$id=$_POST['id2'];
-	$bor=$_POST['bor'];
 	$uid=$_SESSION['id'];
 	if(!empty($id))
 	{
-		$query="SELECT BOOK_ID,LIBID,TO_NUMBER(COPY) COPY FROM BOOKS WHERE BOOK_ID='$id'";
-		$result=oci_parse($conn,$query);
-		oci_execute($result);
-		while($row=oci_fetch_array($result)){
-			$libid=$row['LIBID'];
-			$copy=$row['COPY'];
-		}
-		if($copy>0){
-		$query1="INSERT INTO BORROW(BORROW_ID,USER_ID,BOOK_ID,LIBID) VALUES('$bor','$uid','$id','$libid')";
-		$result1=oci_parse($conn,$query1);
-		oci_execute($result1);
-		$query2="UPDATE BOOKS SET COPY=TO_CHAR($copy-1) WHERE BOOK_ID='$id'";
-		$result2=oci_parse($conn,$query2);
-		oci_execute($result2);
-		}
-		else
-		{
-			array_push($errors,"Sorry There is no Copy");
-		}
+		$stid = oci_parse($conn, 'begin B_PROC(:p,:r); end;');
+		oci_bind_by_name($stid, ':p', $id);
+		oci_bind_by_name($stid, ':r', $uid);
+		oci_execute($stid);
 	}
 }
+oci_close($conn);
 ?>

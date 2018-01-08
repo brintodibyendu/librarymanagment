@@ -24,8 +24,8 @@ include('regfunc.php');
 </center>
 <script>
 var e = document.getElementById("g");
-		e.onclick=function()
-		{
+e.onclick=function()
+{
 		var strUser = e.options[e.selectedIndex].text;
 document.getElementById("genre").value=strUser;	
 		}
