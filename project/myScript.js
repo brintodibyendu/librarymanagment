@@ -1,0 +1,10 @@
+$(document).ready(function()
+{
+	$("#author").keyup(function(){
+		$get("suggest.php",{author:$("#author").val()},function(data)
+			{
+			$("datalist").empty();
+			$("datalist").html(data);			
+	});
+	});
+});
